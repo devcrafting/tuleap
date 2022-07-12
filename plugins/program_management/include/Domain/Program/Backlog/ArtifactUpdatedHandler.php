@@ -25,6 +25,7 @@ namespace Tuleap\ProgramManagement\Domain\Program\Backlog;
 use Tuleap\ProgramManagement\Domain\Events\ArtifactUpdatedEvent;
 use Tuleap\ProgramManagement\Domain\Program\Backlog\AsynchronousCreation\DispatchProgramIncrementUpdate;
 use Tuleap\ProgramManagement\Domain\Program\Backlog\AsynchronousCreation\IterationCreationDetector;
+use Tuleap\ProgramManagement\Domain\Program\Backlog\AsynchronousCreation\RetrieveProgramIncrementsIterations;
 use Tuleap\ProgramManagement\Domain\Program\Backlog\Feature\Content\UserStoryPlanException;
 use Tuleap\ProgramManagement\Domain\Program\Backlog\Feature\PlanUserStoriesInMirroredProgramIncrements;
 use Tuleap\ProgramManagement\Domain\Program\Backlog\Feature\ProgramIncrementChanged;
@@ -45,6 +46,7 @@ final class ArtifactUpdatedHandler
         private IterationCreationDetector $iteration_creation_detector,
         private DispatchProgramIncrementUpdate $update_dispatcher,
         private DispatchIterationUpdate $iteration_update_dispatcher,
+        private RetrieveProgramIncrementsIterations $programIncrementsIterations_retriever
     ) {
     }
 
@@ -87,7 +89,10 @@ final class ArtifactUpdatedHandler
 
     private function dispatchUpdate(ProgramIncrementUpdate $program_increment_update): void
     {
-        $creations = $this->iteration_creation_detector->detectNewIterationCreations($program_increment_update);
+        $program_increment_iterations = $this->programIncrementsIterations_retriever->retrieve($program_increment_update->getProgramIncrement(), $program_increment_update->getUser());
+        $events = $program_increment_iterations->detectNewIterationsCreation();
+
+        //$creations = $this->iteration_creation_detector->detectNewIterationCreations($program_increment_update);
         $this->update_dispatcher->dispatchUpdate($program_increment_update, ...$creations);
     }
 }

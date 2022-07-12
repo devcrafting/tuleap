@@ -38,7 +38,7 @@ use Tuleap\ProgramManagement\Domain\Workspace\UserIdentifier;
  */
 final class IterationIdentifier implements TimeboxIdentifier
 {
-    private function __construct(private int $id)
+    public function __construct(private int $id)
     {
     }
 

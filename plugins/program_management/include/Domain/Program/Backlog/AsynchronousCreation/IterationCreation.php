@@ -79,7 +79,7 @@ final class IterationCreation implements TimeboxMirroringOrder
                 );
                 continue;
             }
-            $creations[] = new self(
+            $creations[] = new IterationCreationDetected(
                 $iteration_identifier,
                 $tracker,
                 $iterations->program_increment,
